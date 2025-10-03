@@ -9,30 +9,17 @@ import {
   ProfileOrders,
   NotFound404
 } from '@pages';
+
 import { Modal, OrderInfo, IngredientDetails } from '@components';
-import {
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-  useLocation
-} from 'react-router-dom';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from '../../services/store';
 import { useEffect } from 'react';
 import { fetchIngredients } from '../../services/slices/ingredientsReducer';
 import '../../index.css';
 import styles from './app.module.css';
 import { AppHeader } from '@components';
-import { ChildProcess } from 'child_process';
 import { fetchUser, setAuthChecked } from '../../services/slices/userReducer';
-
-const ProtectedRoute = ({
-  children,
-  isAuth
-}: {
-  children: React.ReactNode;
-  isAuth: boolean;
-}) => (isAuth ? <>{children}</> : <Navigate to='/login' replace />);
+import { ProtectedRoute } from '../protected-route/protected-route';
 
 const ModalWrapper = ({
   children,
@@ -52,8 +39,6 @@ const ModalWrapper = ({
 
 const App = () => {
   const dispatch = useDispatch();
-  const isAuth = true;
-  const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { background?: Location };
 
@@ -68,10 +53,11 @@ const App = () => {
       <Routes location={state?.background || location}>
         <Route path='/' element={<ConstructorPage />} />
         <Route path='/feed' element={<Feed />} />
+
         <Route
           path='/login'
           element={
-            <ProtectedRoute isAuth>
+            <ProtectedRoute anonymous>
               <Login />
             </ProtectedRoute>
           }
@@ -79,7 +65,7 @@ const App = () => {
         <Route
           path='/register'
           element={
-            <ProtectedRoute isAuth>
+            <ProtectedRoute anonymous>
               <Register />
             </ProtectedRoute>
           }
@@ -87,7 +73,7 @@ const App = () => {
         <Route
           path='/forgot-password'
           element={
-            <ProtectedRoute isAuth>
+            <ProtectedRoute anonymous>
               <ForgotPassword />
             </ProtectedRoute>
           }
@@ -95,15 +81,16 @@ const App = () => {
         <Route
           path='/reset-password'
           element={
-            <ProtectedRoute isAuth>
+            <ProtectedRoute anonymous>
               <ResetPassword />
             </ProtectedRoute>
           }
         />
+
         <Route
           path='/profile'
           element={
-            <ProtectedRoute isAuth>
+            <ProtectedRoute>
               <Profile />
             </ProtectedRoute>
           }
@@ -111,11 +98,12 @@ const App = () => {
         <Route
           path='/profile/orders'
           element={
-            <ProtectedRoute isAuth>
+            <ProtectedRoute>
               <ProfileOrders />
             </ProtectedRoute>
           }
         />
+
         <Route path='/*' element={<NotFound404 />} />
       </Routes>
 
@@ -140,7 +128,7 @@ const App = () => {
           <Route
             path='/profile/orders/:number'
             element={
-              <ProtectedRoute isAuth={isAuth}>
+              <ProtectedRoute>
                 <ModalWrapper title=''>
                   <OrderInfo />
                 </ModalWrapper>
